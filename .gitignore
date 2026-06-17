@@ -1,0 +1,5 @@
+".git/" 
+"*.token" 
+".env" 
+"Thumbs.db" 
+"~$*" 

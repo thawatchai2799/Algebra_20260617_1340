@@ -1,0 +1,49 @@
+two_layer_experiments_ext.py
+Windows-11-10.0.26200-SP0 | Python 3.12.8 | seed=20060626
+configs=60 random/config=4000 sizes=(8, 16, 24, 32, 40, 48) reps=10
+
+PROFILE ipv4    d=4  address=32-bit  axes=('proto', 'src', 'dst', 'dport')
+EXP A  Correctness vs brute force
+  exhaustive checks = 61440   random checks = 240000
+  exhaustive mismatches = 0   random mismatches = 0   (expected 0 / 0)
+EXP B  Box-count and scaling (FULL domain), reps=10
+rules  k   t   |A(N)|  |A(G)|  |Phi|avg  |Phi|max  grid bound  build ms
+8      4   4   9       12      13        35        6.6e+04     0.6
+16     8   8   54      68      153       308       1.0e+06     14.4
+24     12  12  126     130     565       1377      5.3e+06     64.5
+32     16  16  152     342     1039      2129      1.7e+07     283.9
+40     20  20  442     562     1905      3634      4.1e+07     714.6
+48     24  24  297     745     3783      18733     8.5e+07     942.6
+
+PROFILE ipv6    d=4  address=128-bit  axes=('proto', 'src', 'dst', 'dport')
+EXP A  Correctness vs brute force
+  exhaustive checks = 61440   random checks = 240000
+  exhaustive mismatches = 0   random mismatches = 0   (expected 0 / 0)
+EXP B  Box-count and scaling (FULL domain), reps=10
+rules  k   t   |A(N)|  |A(G)|  |Phi|avg  |Phi|max  grid bound  build ms
+8      4   4   11      11      8         22        6.6e+04     0.6
+16     8   8   53      69      235       905       1.0e+06     9.8
+24     12  12  113     119     520       1425      5.3e+06     38.2
+32     16  16  84      333     955       4176      1.7e+07     130.3
+40     20  20  279     281     1127      2793      4.1e+07     243.1
+48     24  24  604     1057    5256      11922     8.5e+07     1237.1
+
+PROFILE icmp    d=6  address=32-bit  axes=('proto', 'src', 'dst', 'dport', 'itype', 'icode')
+EXP A  Correctness vs brute force
+  exhaustive checks = 122880   random checks = 240000
+  exhaustive mismatches = 0   random mismatches = 0   (expected 0 / 0)
+EXP B  Box-count and scaling (FULL domain), reps=10
+rules  k   t   |A(N)|  |A(G)|  |Phi|avg  |Phi|max  grid bound  build ms
+8      4   4   20      17      44        230       1.7e+07     1.2
+16     8   8   124     110     697       3370      1.1e+09     34.7
+24     12  12  529     412     3631      15477     1.2e+10     530.9
+32     16  16  1127    1413    12012     47686     6.9e+10     3560.3
+40     20  20  1523    1953    12967     31962     2.6e+11     5336.7
+48     24  24  6666    4744    70770     152878    7.8e+11     56956.8
+
+SUMMARY
+profile  d   addr-bits   total packet checks   total mismatches
+ipv4     4   32          301440              0
+ipv6     4   128         301440              0
+icmp     6   32          362880              0
+Total wall time: 827.0 s
