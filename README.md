@@ -22,8 +22,8 @@ unions of disjoint boxes, and every check is an emptiness or containment test.
 
 | File | Purpose | Paper artifact |
 |------|---------|----------------|
-| `two_layer_experiments.py`     | Main harness, `d = 4` header space (proto, src, dst, dport). Correctness, scaling, anomaly + injection experiments. | Tables III, IV; Figure 3 |
-| `two_layer_experiments_ext.py` | Dimension-generic companion. Re-runs correctness + scaling for IPv6 (128-bit) and ICMP (`d = 6`). | Table V |
+| `two_layer_experiments.py`     | Main harness, `d = 4` header space (proto, src, dst, dport). Correctness, scaling, anomaly + injection experiments. | Tables 3, 4; Figure 3 |
+| `two_layer_experiments_ext.py` | Dimension-generic companion. Re-runs correctness + scaling for IPv6 (128-bit) and ICMP (`d = 6`). | Table 5 |
 | `figures/fig_gen.py`           | Regenerates the three paper figures (needs `matplotlib`). | Figures 1–3 |
 | `figures/fig_export.py`        | Exports the figures as 1200-dpi PNG and vector PDF. | Figures 1–3 |
 | `results/`                     | Saved console output from the exact runs reported in the paper (see below). | — |
@@ -32,10 +32,10 @@ unions of disjoint boxes, and every check is an emptiness or containment test.
 
 | File | Run | Paper artifact |
 |------|-----|----------------|
-| `results_thorough_seed20060626_*.txt` | Main harness, `--preset thorough --seed 20060626` | Tables III, IV; Figure 3 |
+| `results_thorough_seed20060626_*.txt` | Main harness, `--preset thorough --seed 20060626` | Tables 3, 4; Figure 3 |
 | `results_thorough_seed2_*.txt`        | Main harness, `--preset thorough --seed 2` (confirmation) | Section 8 text |
 | `results_quick_seed20060626_*.txt`    | Main harness, `--preset quick` (smoke test) | — |
-| `run_ext_windows_seed20060626.txt`    | Extension harness, IPv4/IPv6/ICMP profiles | Table V |
+| `run_ext_windows_seed20060626.txt`    | Extension harness, IPv4/IPv6/ICMP profiles | Table 5 |
 
 All four logs were produced on Windows 11, CPython 3.12.8. The box counts in
 these logs match the paper exactly; only the build-time column varies between
@@ -43,13 +43,13 @@ runs, as timing is environment-dependent.
 
 ## Reproducing the results
 
-### Main experiments (Tables III, IV; Figure 3 data)
+### Main experiments (Tables 3, 4; Figure 3 data)
 
 ```bash
 # Quick smoke test (a few seconds)
 python3 two_layer_experiments.py
 
-# Full run used in the paper (~20 min); reproduces Tables III and IV
+# Full run used in the paper (~20 min); reproduces Tables 3 and 4
 python3 two_layer_experiments.py --preset thorough --seed 20060626
 
 # Second seed for confirmation
@@ -60,7 +60,7 @@ Each run prints paper-ready tables and also writes a timestamped results file.
 Correctness (`mismatches = 0`) and the box counts are deterministic for a fixed
 seed; wall-clock timing is environment-specific.
 
-### Header-space extensions (Table V)
+### Header-space extensions (Table 5)
 
 ```bash
 # IPv6 (128-bit addresses) and ICMP (d = 6), plus an IPv4 baseline
@@ -87,7 +87,7 @@ cd figures && python3 fig_gen.py      # writes fig1.png, fig2.png, fig3.png
 ## Environment used in the paper
 
 - Main scaling/anomaly tables: Windows 11, CPython 3.12.8.
-- IPv6/ICMP extension table (Table V): Windows 11, CPython 3.12.8 (same machine).
+- IPv6/ICMP extension table (Table 5): Windows 11, CPython 3.12.8 (same machine).
 - Default seed: `20060626`; confirmation seed: `2`.
 
 Because the algorithm is exact, the correctness outcome (zero mismatches) and
@@ -96,7 +96,10 @@ the box counts reproduce on any platform; only timing varies.
 ## Citing
 
 If you use this code, please cite the paper. Repository: https://github.com/thawatchai2799/Algebra_20260617_1340
-A permanent archive with a DOI will be minted on acceptance (Zenodo).
+A permanent archive is on Zenodo: DOI 10.5281/zenodo.20733876 (release tag v1.0).
+The tag pins the exact code and archived logs behind every number reported in
+the paper; the build-time column of Table 3 in the revised manuscript matches
+`results/results_thorough_seed20060626_20260617-042039.txt` exactly.
 
 ## License
 
