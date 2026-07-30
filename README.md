@@ -22,17 +22,16 @@ unions of disjoint boxes, and every check is an emptiness or containment test.
 
 | File | Purpose | Paper artifact |
 |------|---------|----------------|
-| `two_layer_experiments.py`     | Main harness, `d = 4` header space (proto, src, dst, dport). Correctness, scaling, anomaly + injection experiments. | Tables 3, 4; Figure 3 |
+| `two_layer_experiments.py`     | Main harness, `d = 4` header space (proto, src, dst, dport). Correctness, scaling, anomaly + injection experiments. | Tables 3, 4; Figure 4 |
 | `two_layer_experiments_ext.py` | Dimension-generic companion. Re-runs correctness + scaling for IPv6 (128-bit) and ICMP (`d = 6`). | Table 5 |
-| `figures/fig_gen.py`           | Regenerates the three paper figures (needs `matplotlib`). | Figures 1–3 |
-| `figures/fig_export.py`        | Exports the figures as 1200-dpi PNG and vector PDF. | Figures 1–3 |
+| `figures/fig_worked_example.py` | Draws the worked example of Section 7 to scale (1200-dpi PNG + vector PDF; needs `matplotlib`). | Figure 3 |
 | `results/`                     | Saved console output from the exact runs reported in the paper (see below). | — |
 
 ### Archived run logs (`results/`)
 
 | File | Run | Paper artifact |
 |------|-----|----------------|
-| `results_thorough_seed20060626_*.txt` | Main harness, `--preset thorough --seed 20060626` | Tables 3, 4; Figure 3 |
+| `results_thorough_seed20060626_*.txt` | Main harness, `--preset thorough --seed 20060626` | Tables 3, 4; Figure 4 |
 | `results_thorough_seed2_*.txt`        | Main harness, `--preset thorough --seed 2` (confirmation) | Section 8 text |
 | `results_quick_seed20060626_*.txt`    | Main harness, `--preset quick` (smoke test) | — |
 | `run_ext_windows_seed20060626.txt`    | Extension harness, IPv4/IPv6/ICMP profiles | Table 5 |
@@ -43,7 +42,7 @@ runs, as timing is environment-dependent.
 
 ## Reproducing the results
 
-### Main experiments (Tables 3, 4; Figure 3 data)
+### Main experiments (Tables 3, 4; Figure 4 data)
 
 ```bash
 # Quick smoke test (a few seconds)
@@ -79,10 +78,16 @@ brute-force oracle.
 
 ### Figures
 
+Figure 3 of the paper (the Section 7 worked example, drawn to scale) is fully
+reproducible from this repository:
+
 ```bash
-pip install matplotlib
-cd figures && python3 fig_gen.py      # writes fig1.png, fig2.png, fig3.png
+cd figures && python3 fig_worked_example.py   # writes worked_example.png (1200 dpi) and worked_example.pdf
 ```
+
+Figure 4 (the scaling plot) is a log–log rendering of exactly the Table 3 data
+recorded in `results/results_thorough_seed20060626_*.txt`; Figures 1–2 are
+schematic illustrations whose full construction is described in their captions.
 
 ## Environment used in the paper
 
