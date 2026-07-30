@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>README — Algebra_20260617_1340</title>
+<style>
+  body{margin:0; background:#f6f8fa; font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif; color:#1f2328; line-height:1.6;}
+  .md{max-width:920px; margin:24px auto; background:#fff; border:1px solid #d1d9e0; border-radius:8px; padding:40px 48px;}
+  h1,h2,h3{border-bottom:1px solid #d8dee4; padding-bottom:.3em; margin-top:1.6em;}
+  h1{font-size:1.9em; margin-top:0;} h2{font-size:1.45em;} h3{font-size:1.15em; border-bottom:none;}
+  code{background:#f0f2f5; padding:.15em .4em; border-radius:5px; font-family:ui-monospace,Consolas,monospace; font-size:.9em;}
+  pre{background:#f0f2f5; padding:14px 16px; border-radius:8px; overflow-x:auto;}
+  pre code{background:none; padding:0;}
+  table{border-collapse:collapse; width:100%; margin:14px 0; font-size:.95em;}
+  th,td{border:1px solid #d1d9e0; padding:7px 12px; text-align:left; vertical-align:top;}
+  th{background:#f6f8fa;}
+  tr:nth-child(even) td{background:#fbfcfd;}
+  a{color:#0969da; text-decoration:none;} a:hover{text-decoration:underline;}
+  @media print{ body{background:#fff;} .md{border:0; padding:0; max-width:none;} }
+</style>
+</head>
+<body><div class="md">
+<h1>An Algebra for Two-Layer Cloud Filtering — Reference Implementation</h1>
+<p>Reference implementation and experiment harness for the paper
+<strong>"An Algebra for Two-Layer Cloud Filtering: Detecting Redundancy, Shadowing,
+and Dominance Anomalies across Stateless Network ACLs and Stateful Security
+Groups."</strong></p>
+<p>The code computes the composed admitted region <code>Phi = A(N) ∩ A(G)</code> of an AWS
+Network ACL (ordered, first-match, allow/deny) and a Security Group (unordered,
+allow-only union), and detects the cross-layer anomalies defined in the paper
+(dead SG rule, Phi-redundant SG rule, Phi-ineffective NACL allow, layer
+disagreement). Everything is exact: rules are axis-parallel boxes, regions are
+unions of disjoint boxes, and every check is an emptiness or containment test.</p>
+<h2>Requirements</h2>
+<ul>
+<li>Python 3.8 or newer.</li>
+<li><strong>Standard library only</strong> — no third-party packages, no network access.
+  (The figure script additionally needs <code>matplotlib</code>; see below.)</li>
+</ul>
+<h2>Contents</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Paper artifact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>two_layer_experiments.py</code></td>
+<td>Main harness, <code>d = 4</code> header space (proto, src, dst, dport). Correctness, scaling, anomaly + injection experiments.</td>
+<td>Tables 3, 4; Figure 4</td>
+</tr>
+<tr>
+<td><code>two_layer_experiments_ext.py</code></td>
+<td>Dimension-generic companion. Re-runs correctness + scaling for IPv6 (128-bit) and ICMP (<code>d = 6</code>).</td>
+<td>Table 5</td>
+</tr>
+<tr>
+<td><code>figures/fig_worked_example.py</code></td>
+<td>Draws the worked example of Section 7 to scale (1200-dpi PNG + vector PDF; needs <code>matplotlib</code>).</td>
+<td>Figure 3</td>
+</tr>
+<tr>
+<td><code>results/</code></td>
+<td>Saved console output from the exact runs reported in the paper (see below).</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3>Archived run logs (<code>results/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Run</th>
+<th>Paper artifact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>results_thorough_seed20060626_*.txt</code></td>
+<td>Main harness, <code>--preset thorough --seed 20060626</code></td>
+<td>Tables 3, 4; Figure 4</td>
+</tr>
+<tr>
+<td><code>results_thorough_seed2_*.txt</code></td>
+<td>Main harness, <code>--preset thorough --seed 2</code> (confirmation)</td>
+<td>Section 8 text</td>
+</tr>
+<tr>
+<td><code>results_quick_seed20060626_*.txt</code></td>
+<td>Main harness, <code>--preset quick</code> (smoke test)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>run_ext_windows_seed20060626.txt</code></td>
+<td>Extension harness, IPv4/IPv6/ICMP profiles</td>
+<td>Table 5</td>
+</tr>
+</tbody>
+</table>
+<p>All four logs were produced on Windows 11, CPython 3.12.8. The box counts in
+these logs match the paper exactly; only the build-time column varies between
+runs, as timing is environment-dependent.</p>
+<h2>Reproducing the results</h2>
+<h3>Main experiments (Tables 3, 4; Figure 4 data)</h3>
+<pre><code class="language-bash"># Quick smoke test (a few seconds)
+python3 two_layer_experiments.py
+
+# Full run used in the paper (~20 min); reproduces Tables 3 and 4
+python3 two_layer_experiments.py --preset thorough --seed 20060626
+
+# Second seed for confirmation
+python3 two_layer_experiments.py --preset thorough --seed 2
+</code></pre>
+<p>Each run prints paper-ready tables and also writes a timestamped results file.
+Correctness (<code>mismatches = 0</code>) and the box counts are deterministic for a fixed
+seed; wall-clock timing is environment-specific.</p>
+<h3>Header-space extensions (Table 5)</h3>
+<pre><code class="language-bash"># IPv6 (128-bit addresses) and ICMP (d = 6), plus an IPv4 baseline
+python3 two_layer_experiments_ext.py
+
+# A single profile
+python3 two_layer_experiments_ext.py --profile ipv6
+python3 two_layer_experiments_ext.py --profile icmp --sizes 8 16 24 32 --reps 4
+</code></pre>
+<p>This harness is <strong>dimension-generic</strong>: the header space is given as a list of
+axes, so widening <code>src</code>/<code>dst</code> to 128-bit integers (IPv6) or adding
+<code>icmp_type</code>/<code>icmp_code</code> axes (ICMP) requires no change to the region algebra —
+only the value of <code>d</code>. Each profile is validated against an independent
+brute-force oracle.</p>
+<h3>Figures</h3>
+<p>Figure 3 of the paper (the Section 7 worked example, drawn to scale) is fully
+reproducible from this repository:</p>
+<pre><code class="language-bash">cd figures &amp;&amp; python3 fig_worked_example.py   # writes worked_example.png (1200 dpi) and worked_example.pdf
+</code></pre>
+<p>Figure 4 (the scaling plot) is a log–log rendering of exactly the Table 3 data
+recorded in <code>results/results_thorough_seed20060626_*.txt</code>; Figures 1–2 are
+schematic illustrations whose full construction is described in their captions.</p>
+<h2>Environment used in the paper</h2>
+<ul>
+<li>Main scaling/anomaly tables: Windows 11, CPython 3.12.8.</li>
+<li>IPv6/ICMP extension table (Table 5): Windows 11, CPython 3.12.8 (same machine).</li>
+<li>Default seed: <code>20060626</code>; confirmation seed: <code>2</code>.</li>
+</ul>
+<p>Because the algorithm is exact, the correctness outcome (zero mismatches) and
+the box counts reproduce on any platform; only timing varies.</p>
+<h2>Citing</h2>
+<p>If you use this code, please cite the paper. Repository: https://github.com/thawatchai2799/Algebra_20260617_1340
+A permanent archive is on Zenodo: DOI 10.5281/zenodo.20733876 (release tag v1.0).
+The tag pins the exact code and archived logs behind every number reported in
+the paper; the build-time column of Table 3 in the revised manuscript matches
+<code>results/results_thorough_seed20060626_20260617-042039.txt</code> exactly.</p>
+<h2>License</h2>
+<p>Released under the MIT License — see <code>LICENSE</code>.</p>
+</div></body>
+</html>
